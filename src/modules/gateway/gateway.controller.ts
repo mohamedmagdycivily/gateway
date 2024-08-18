@@ -1,7 +1,8 @@
-import { Controller, Post, Body, Param } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get } from '@nestjs/common';
 import { GatewayService } from './gateway.service';
 import { CreateGatewayDto, PeripheralDto } from './dto/gateway.dto';
 import { Gateway } from './entity/gateway.entity';
+import { ObjectId } from 'mongodb';
 
 @Controller('gateways')
 export class GatewayController {
@@ -12,11 +13,14 @@ export class GatewayController {
     return this.gatewayService.create(createGatewayDto);
   }
 
-  // @Post(':id/peripherals')
-  // async addPeripheral(
-  //   @Param('id') id: string,
-  //   @Body() peripheralDto: PeripheralDto,
-  // ): Promise<Gateway> {
-  //   return this.gatewayService.addPeripheral(id, peripheralDto);
-  // }
+  @Get()
+  async findAll(): Promise<Gateway[]> {
+    return this.gatewayService.findAll();
+  }
+
+  @Get(':id')
+  async findOneById(@Param('id') id: string): Promise<Gateway> {
+    const objectId = new ObjectId(id);  // Convert the string to ObjectId
+    return this.gatewayService.findOneById(objectId);
+  }
 }

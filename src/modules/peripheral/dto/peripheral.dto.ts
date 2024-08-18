@@ -9,6 +9,4 @@ export class PeripheralDto {
   @IsString()
   vendor: string;
 
-  @IsEnum(PeripheralStatus)
-  status: PeripheralStatus;
 }

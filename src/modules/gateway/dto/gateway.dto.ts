@@ -17,9 +17,6 @@ export class PeripheralDto {
   @IsString()
   vendor: string;
 
-  @IsDate()
-  dateCreated: Date;
-
   @IsEnum(PeripheralStatus)
   status: PeripheralStatus;
 }

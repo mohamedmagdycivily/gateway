@@ -27,11 +27,20 @@ export class GatewayRepository {
     });
   }
 
-  async addPeripheral(gatewayId: ObjectId, peripheral: Peripheral): Promise<Gateway> {
-    let gateway = await this.GatewayRepo.findOne({
-      where: { _id: gatewayId },
-      relations: ['peripheralIds'],
-    });
+  async addPeripheral(gatewayId: ObjectId, idPeripheral: ObjectId): Promise<Gateway> {
+    let gateway;
+    if(gatewayId){
+      gateway = await this.GatewayRepo.findOne({
+        where: { _id: gatewayId },
+        relations: ['peripheralIds'],
+      });
+      if(!gateway){
+        throw new NotFoundException('Gateway not found.');
+      }
+      if (gateway.peripheralIds.length >= 10) {
+        throw new BadRequestException('Cannot add more than 10 peripherals to this gateway.');
+      }
+    }
 
     if (!gateway) {
       // If the gateway with the given ObjectId does not exist, find a gateway with fewer than 10 peripherals
@@ -51,31 +60,21 @@ export class GatewayRepository {
       }
     }
 
-    if (gateway.peripheralIds.length >= 10) {
-      throw new BadRequestException('Cannot add more than 10 peripherals to this gateway.');
-    }
-
     await this.GatewayRepo.updateOne(
       { _id: gateway.id },
       // @ts-ignore
-      { $push: { peripheralIds: peripheral.id } } 
+      { $push: { peripheralIds: idPeripheral } } 
     );
 
-    gateway.peripheralIds.push(peripheral.id);
+    gateway.peripheralIds.push(idPeripheral);
     return gateway;
   }
 
-  async removePeripheral(gatewayId: ObjectId, peripheralId: ObjectId): Promise<Gateway> {
-    // Find the gateway by ObjectId
-    let gateway = await this.GatewayRepo.findOne({
-      where: { _id: gatewayId },
-      relations: ['peripheralIds'],
-    });
-
+  async removePeripheral(peripheralId: ObjectId): Promise<Gateway> {
+    const gateway = await this.findGatewayByPeripheralId(peripheralId);
     if (!gateway) {
-      throw new NotFoundException('Gateway not found.');
+      throw new NotFoundException('the peripheral does not belong to any gateway.');
     }
-
     // Remove the peripheral ID from the gateway's peripheralIds array
     const result = await this.GatewayRepo.updateOne(
       { _id: gateway.id },
@@ -91,4 +90,16 @@ export class GatewayRepository {
     gateway.peripheralIds = gateway.peripheralIds.filter(id => !id.equals(peripheralId));
     return gateway;
   }
+
+  findAll(): Promise<Gateway[]> {
+    return this.GatewayRepo.find();
+  }
+
+  async findGatewayByPeripheralId(peripheralId: ObjectId): Promise<Gateway | null> {
+    return this.GatewayRepo.findOne({
+      where: { peripheralIds: peripheralId },
+      relations: ['peripheralIds'],
+    });
+  }
+  
 }
