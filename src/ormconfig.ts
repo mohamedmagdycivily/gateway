@@ -1,7 +1,7 @@
 import { TypeOrmModuleAsyncOptions, TypeOrmModuleOptions, TypeOrmOptionsFactory } from "@nestjs/typeorm";
 import { DataSource, DataSourceOptions } from "typeorm";
 
-const keys = require('../env/keys');
+const keys = require('./config/env/keys');
 
 export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
   useFactory: async (): Promise<TypeOrmModuleOptions> => {

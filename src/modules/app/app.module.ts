@@ -3,8 +3,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { OrderModule } from '../gateway/gateway.module';
-import { typeOrmAsyncConfig } from "../../config/orm/ormconfig";
+import { GatewayModule } from '../gateway/gateway.module';
+import { PeripheralModule } from '../peripheral/peripheral.module';
+import { typeOrmAsyncConfig } from "../../ormconfig";
 const keys = require('./../../config/env/keys');
 
 @Module({
@@ -13,7 +14,8 @@ const keys = require('./../../config/env/keys');
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
-    OrderModule,
+    GatewayModule,
+    PeripheralModule,
   ],
   controllers: [
     AppController,
