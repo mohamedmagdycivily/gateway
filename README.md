@@ -46,3 +46,6 @@ Endpoint to remove a peripheral from a gateway.
 Endpoint to add a peripheral to a gateway.
 ```
 Note: use swagger in http://localhost:3000/doc to call the apis directly
+
+# TODO:
+add pagination to get Gateways api and get Peripherals api
